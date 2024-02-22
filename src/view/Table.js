@@ -4,6 +4,8 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
+import * as XLSX from 'xlsx';
+
 const Table = () => {
   const [recruitment, setRecruitment] = useState([]); // Estado para armazenar os dados da API
 
@@ -24,6 +26,13 @@ const Table = () => {
         console.error('Erro ao buscar dados:', error);
       });
   }, []);
+
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(recruitment);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Recruitment");
+    XLSX.writeFile(wb, "recruitment.xlsx");
+  };
 
   const columnDefs = [ // Definição das colunas da tabela
     { headerName: "ID", field: "id", sortable: true, filter: true },
@@ -47,7 +56,7 @@ const Table = () => {
   ];
 
   return (
-    <div className="ag-theme-alpine" style={{ width: '100%', boxShadow: '0px 0px 5px 0px rgba(0, 0, 0, 0.5)' }}>
+    <div className="ag-theme-alpine" style={{ width: '100%', boxShadow: '0px 0px 5px 0px rgba(0, 0, 0, 0.5)', borderRadius: '20px', overflow: 'hidden' }}>
       <AgGridReact
         columnDefs={columnDefs}
         rowData={recruitment}
@@ -68,6 +77,21 @@ const Table = () => {
           notBlank: 'Não em branco',
         }}
       />
+      <center><button variant="contained" 
+      style={{
+        backgroundColor: '#ffa500',
+        border: 'none',
+        color: 'white',
+        padding: '15px 32px',
+        textAlign: 'center',
+        textDecoration: 'none',
+        display: 'inline-block',
+        fontSize: '16px',
+        margin: '15px 2px',
+        cursor: 'pointer',
+        borderRadius: '12px',
+      }}
+        onClick={exportToExcel}>Exportar para Excel</button></center>
     </div>
   );
 }
